@@ -14,12 +14,13 @@ logger = logging.getLogger(__name__)
 
 
 def call_cmd(cmd, output_json=True):
-    """Run a command and return the output.
+    """
+    Execute a given command and return the output.
 
-    :param cmd: command to run
-    :param output_json: output the result as JSON
-    :return: subprocess stdout
-    :raises RuntimeError: on subprocess non-zero return code
+    :param cmd: List of command strings to run.
+    :param output_json: Boolean to output the result as JSON. Default is True.
+    :return: Decoded subprocess stdout, parsed as JSON if output_json is True.
+    :raises CalledProcessError: Command returns a non-zero return code.
     """
     try:
         proc = subprocess.run(
@@ -41,11 +42,12 @@ def call_cmd(cmd, output_json=True):
 
 
 def get_bmc_info(maas_user, node_id):
-    """Fetch BMC information from a given node.
+    """
+    Fetch BMC info via MAAS CLI.
 
-    :param maas_user: User of the MAAS system
-    :param node_id: ID of the node
-    :return: Tuple containing BMC IP, User, and Password
+    :param maas_user: String, username of the MAAS system.
+    :param node_id: String, ID of the node in MAAS.
+    :return: Tuple of strings: BMC IP address, BMC username, and BMC password.
     """
     logger.info(f"Fetching BMC information from node {node_id}")
     data = call_cmd(["maas", maas_user, "node", "power-parameters", node_id])
@@ -57,12 +59,23 @@ def get_bmc_info(maas_user, node_id):
 
 
 def set_environ_vars(bmc_ip, bmc_user, bmc_pass):
+    """
+    Set environment variables for BMC credentials.
+
+    :param bmc_ip: String, BMC IP address.
+    :param bmc_user: String, BMC username.
+    :param bmc_pass: String, BMC password.
+    """
     os.environ["BMC_IP"] = bmc_ip
     os.environ["BMC_USER"] = bmc_user
     os.environ["BMC_PASS"] = bmc_pass
 
 
 def main():
+    """
+    Fetches BMC information, sets environment variables,
+    and stores the information in Hashicorp Vault.
+    """
     maas_user = "testflinger_a"
     node_id = "m7gfpp"
     vault_url = "http://172.16.0.2:8200"
@@ -84,7 +97,6 @@ def main():
     )
 
     read_response = client.secrets.kv.read_secret_version(path=secret_path)
-    # vault secret dic path is ['data']['data'][key]
     logger.info("Read BMC Info from Vault: %s", read_response['data']['data'])
 
 
