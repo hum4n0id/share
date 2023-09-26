@@ -97,6 +97,8 @@ def main():
     )
 
     read_response = client.secrets.kv.read_secret_version(path=secret_path)
+
+    # vault secret dict path is ['data']['data'][key]
     logger.info("Read BMC Info from Vault: %s", read_response['data']['data'])
 
 
