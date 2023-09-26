@@ -33,8 +33,10 @@ def call_cmd(cmd, output_json=True):
 
     if proc.stdout:
         output = proc.stdout.decode()
+
         if output_json:
             return json.loads(output)
+
         return output
 
 
@@ -69,12 +71,16 @@ def main():
     bmc_ip, bmc_user, bmc_pass = get_bmc_info(maas_user, node_id)
     set_environ_vars(bmc_ip, bmc_user, bmc_pass)
 
-    client = hvac.Client(url=vault_url, token=vault_token)
+    client = hvac.Client(
+        url=vault_url, token=vault_token
+    )
 
     secret_path = f"bmc-{node_id}"
     client.secrets.kv.v2.create_or_update_secret(
         path=secret_path,
-        secret=dict(ip=bmc_ip, user=bmc_user, passw=bmc_pass),
+        secret=dict(
+            ip=bmc_ip, user=bmc_user, passw=bmc_pass
+        ),
     )
 
     read_response = client.secrets.kv.read_secret_version(path=secret_path)
