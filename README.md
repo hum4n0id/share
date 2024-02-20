@@ -1,4 +1,4 @@
-# Layer 4 (TCP) Load-Balancer Server and Library
+# Layer 4 (TCP) Load-Balancing Server and Library
 
 This document outlines the design and architecture of a TCP load-balancer/reverse proxy and its associated library. The server accepts TLS connections from clients, authenticates them using client certificates, and forwards requests to upstream servers based on the client certificate's organization field. This is broken out into a modular library and the actual load balancing server. The library provides the necessary components for upstream server management and selection and client rate limiting, while the load balancing server supports mTLS authentication, client organization authorization, connection handling, and client forwarding to upstream servers.
 
